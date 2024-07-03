@@ -72,7 +72,7 @@ class Execute:
                                 with open(token[1].replace("\"", ""), "r") as fi:
                                     Execute(fi.read()).execute1()
                         else:
-                            print(f"Error: Use a word to define function name. used type: {token[0]}")
+                            print(f"Error: use an string to import files")
                             sys.exit(1)
                     else:
                         print("Error: you can only 'import \"filename.lasun\"' and 'fct myfunc() {...}'")
@@ -90,6 +90,9 @@ class Execute:
                             functions[self.funcname] = {"code": [], "params": []}
                             self.in_code = True
                             self.new_arg = False
+                        else:
+                            print(f"Error: Use a word to define function name. used type: {token[0]}")
+                            sys.exit(1)
                     elif not self.new_arg:
                         if token[0] == "COMMA":
                             self.new_args = True
