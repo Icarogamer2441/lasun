@@ -1,0 +1,59 @@
+fct w() {
+    y -= 1
+}
+
+fct a() {
+    x -= 1
+}
+
+fct s() {
+    y += 1
+}
+
+fct d() {
+    x += 1
+}
+
+fct run() {
+    Vector2 pos = x y
+    Vector2 size = 50 50
+    Rgb myrectcolor = 0 255 0
+    Rect myrect = pos size
+    DrawRect myrectcolor myrect
+    ! verifying the key pressed (in this case is arrows keys);
+    KEY UP if w
+    KEY DOWN if s
+    KEY LEFT if a
+    KEY RIGHT if d
+    ! limiting to not pass the border of the window;
+    int widthh = width
+    int heightt = height
+    widthh -= 50
+    heightt -= 50
+    x < 0 if d
+    x > widthh if a
+    y > heightt if w
+    y < 0 if s
+}
+! main function (to create things only one time);
+! use semicolons to stop comments;
+fct main() {
+    ! player x pos;
+    int x = 0
+    ! player y pos;
+    int y = 0
+    ! configuring the game (you don't need to do this, it have's an default configuration);
+    ! window width
+    int width = 750
+    ! window height;
+    int height = 560
+    ! window name;
+    str windowname = "My window!"
+    ! background Color (rgb);
+    ! R;
+    int bgR = 0
+    ! G;
+    int bgG = 100
+    ! B;
+    int bgB = 210
+}
