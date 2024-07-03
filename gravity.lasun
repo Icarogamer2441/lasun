@@ -1,0 +1,57 @@
+fct y1minus() {
+    y1 -= gravity
+    gravity -= gravity
+}
+
+fct realjump() {
+    gravity -= 0.5
+}
+
+fct jump() {
+    heightt -= 2
+    y1 > heightt if realjump
+}
+
+fct runlft() {
+    x1 -= 0.3
+}
+
+fct left() {
+    x1 -= 0.3
+    KEY R if runlft
+}
+
+fct runrgt() {
+    x1 += 0.3
+}
+
+fct right() {
+    x1 += 0.3
+    KEY R if runrgt
+}
+
+fct run() {
+    Vector2 pos1 = x1 y1
+    y1 += gravity
+    Rect rect1 = pos1 size1
+    Rgb color1 = 255 0 0
+    DrawRect color1 rect1
+    int heightt = height
+    heightt -= 50
+    gravity += 0.01
+    y1 > heightt if y1minus
+    KEY SPACE if jump
+    KEY LEFT if left
+    KEY RIGHT if right
+}
+
+fct main() {
+    int width = 500
+    int height = 350
+    Vector2 size1 = 50 50
+    float x1 = 250.0
+    float y1 = 175.0
+    x1 -= 25
+    y1 -= 25
+    float gravity = 0.0
+}
