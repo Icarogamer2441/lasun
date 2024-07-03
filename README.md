@@ -5,4 +5,4 @@ a programming language to create games!
 Beta
 
 # Current version
-beta 1.0
+beta 1.1
