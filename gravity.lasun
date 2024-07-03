@@ -1,3 +1,5 @@
+! in this game: press left arrow do go left and right arrow to go right, sapce to jump and arrow with R to run;
+
 fct y1minus() {
     y1 -= gravity
     gravity -= gravity
