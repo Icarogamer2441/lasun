@@ -64,13 +64,13 @@ class Execute:
                                 self.in_func = True
                                 self.new_arg = True
                                 funcargs = []
-                            elif token[0] == "import":
-                                token = tokens[tokenpos - 1]
-                                tokenpos += 1
-                                if token[0] == "STRING":
-                                    if token[1].replace("\"","").endswith(".lasun"):
-                                        with open(token[1].replace("\"", ""), "r") as fi:
-                                            Execute(fi.read()).execute1()
+                    elif token[1] == "import":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "STRING":
+                            if token[1].replace("\"","").endswith(".lasun"):
+                                with open(token[1].replace("\"", ""), "r") as fi:
+                                    Execute(fi.read()).execute1()
                         else:
                             print(f"Error: Use a word to define function name. used type: {token[0]}")
                             sys.exit(1)
