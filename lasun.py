@@ -4,8 +4,26 @@ import sys
 
 pygame.init()
 
+def resolve_collision(rect1, rect2, rect1_x_var, rect1_y_var):
+    if rect1.colliderect(rect2):
+        # Calcula o deslocamento necessário para separar os retângulos
+        overlap_x = min(rect1.right - rect2.left, rect2.right - rect1.left)
+        overlap_y = min(rect1.bottom - rect2.top, rect2.bottom - rect1.top)
+
+        # Move os retângulos para resolver a colisão
+        if abs(overlap_x) < abs(overlap_y):
+            if rect1.centerx < rect2.centerx:
+                variables[rect1_x_var] -= overlap_x
+            else:
+                variables[rect1_x_var] += overlap_x
+        else:
+            if rect1.centery < rect2.centery:
+                variables[rect1_y_var] -= overlap_y
+            else:
+                variables[rect1_y_var] += overlap_y
+
 functions = {}
-variables = {"width": 500, "height": 350, "windowname": "Lasun pygame window", "bgR": 0, "bgG": 0, "bgB": 0}
+variables = {"width": 500, "height": 350, "windowname": "Lasun pygame window", "bgR": 0, "bgG": 0, "bgB": 0, "fps": 0} # fps in zero to default of the system
 rects = {}
 
 class Execute:
@@ -262,6 +280,7 @@ class Execute:
                             tokenpos += 1
                             if token[0] == "EQUALS":
                                 token = tokens[tokenpos - 1]
+                         
                                 tokenpos += 1
                                 if token[0] == "INT":
                                     variables[varname1[0]] /= int(token[1])
@@ -596,6 +615,10 @@ class Execute:
                                     tokenpos += 1
                                     if token[0] == "WORD":
                                         rects[self.varname] = pygame.Rect(var1, variables.get(token[1]))
+                                        rects[f"{self.varname}_right"] = rects[self.varname].right
+                                        rects[f"{self.varname}_left"] = rects[self.varname].left
+                                        rects[f"{self.varname}_top"] = rects[self.varname].top
+                                        rects[f"{self.varname}_bottom"] = rects[self.varname].bottom
                                     else:
                                         print("Error: to create Rect variables, use variable names values (part2)")
                                         sys.exit(1)
@@ -622,6 +645,53 @@ class Execute:
                                 sys.exit(1)
                         else:
                             print("Error: use normal words and use variables name to set rect color.")
+                            sys.exit(1)
+                    elif token[1] == "CheckCollision":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "WORD":
+                            rect1 = rects.get(token[1])
+                            token = tokens[tokenpos - 1]
+                            tokenpos += 1
+                            if token[0] == "WORD":
+                                if rect1.colliderect(rects.get(token[1])):
+                                    returned.append(True)
+                                else:
+                                    returned.append(False)
+                            else:
+                                print("Error: use normal words and use rect variables name to check your rect collision (part2)")
+                                sys.exit(1)
+                        else:
+                            print("Error: use normal words and use rect variables name to check your rect collision (part1)")
+                            sys.exit(1)
+                    elif token[1] == "Collide":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "WORD":
+                            rect1 = rects.get(token[1])
+                            token = tokens[tokenpos - 1]
+                            tokenpos += 1
+                            if token[0] == "WORD":
+                                rect2 = rects.get(token[1])
+                                token = tokens[tokenpos - 1]
+                                tokenpos += 1
+                                if token[0] == "WORD":
+                                    rectpos_x = token[1]
+                                    token = tokens[tokenpos - 1]
+                                    tokenpos += 1
+                                    if token[0] == "WORD":
+                                        resolve_collision(rect1, rect2, rectpos_x, token[1])
+                                    else:
+                                        print("Error: use normal words and use integer variables names to your rect pos x (part2 of int)")
+                                        sys.exit(1)
+                                else:
+                                    print("Error: use normal words and use integer variables names to your rect pos x (part1 of int)")
+                                    sys.exit(1)
+                            else:
+                                print("Error: use normal words and use rect variables name to your rect collision (part2 of rect)")
+                                sys.exit(1)
+                        else:
+                            print("Error: use normal words and use rect variables name to your rect collision (part1 of rect)")
                             sys.exit(1)
                     else:
                         print(f"Error: Unknown keyword: {token[1]}")
@@ -759,7 +829,7 @@ def tokenize(expr):
     return tokens
 
 if __name__ == "__main__":
-    version = "beta 1.0"
+    version = "beta 1.1"
     if len(sys.argv) < 2:
         print(f"Lasun programming language version: {version}")
         print(f"Usage: {sys.argv[0]} <file>")
@@ -769,6 +839,8 @@ if __name__ == "__main__":
                 Execute(f.read()).execute1()
                 screen = pygame.display.set_mode((variables["width"], variables["height"]))
                 pygame.display.set_caption(variables["windowname"])
+                clock = pygame.time.Clock()
+                fps = variables.get("fps")
 
                 bgcolor = (variables["bgR"], variables["bgG"], variables["bgB"])
                 print("Background color (bg):", bgcolor)
@@ -785,6 +857,9 @@ if __name__ == "__main__":
 
                     Execute(" ".join(functions["run"]["code"])).execute2()
                     pygame.display.flip()
+
+                    if fps:
+                        clock.tick(fps)
         else:
             print("Error: Use .lasun file extension")
             sys.exit(1)
