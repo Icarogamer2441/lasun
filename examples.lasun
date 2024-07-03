@@ -34,6 +34,13 @@ fct run() {
     x > widthh if a
     y > heightt if w
     y < 0 if s
+    Vector2 pos2 = 100 100
+    Vector2 size2 = 100 50
+    Rgb myrectcolor2 = 0 0 255
+    Rect myrect2 = pos2 size2
+    DrawRect myrectcolor2 myrect2
+    ! CheckCollision rect1 rect2 if yourfunc;
+    Collide myrect myrect2 x y
 }
 ! main function (to create things only one time);
 ! use semicolons to stop comments;
@@ -46,7 +53,7 @@ fct main() {
     ! window width
     int width = 750
     ! window height;
-    int height = 560
+    int height = 340
     ! window name;
     str windowname = "My window!"
     ! background Color (rgb);
