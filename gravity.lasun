@@ -6,7 +6,7 @@ fct y1minus() {
 }
 
 fct realjump() {
-    gravity -= 0.5
+    gravity -= 4
 }
 
 fct jump() {
@@ -15,20 +15,20 @@ fct jump() {
 }
 
 fct runlft() {
-    x1 -= 0.3
+    x1 -= 3
 }
 
 fct left() {
-    x1 -= 0.3
+    x1 -= 3
     KEY R if runlft
 }
 
 fct runrgt() {
-    x1 += 0.3
+    x1 += 3
 }
 
 fct right() {
-    x1 += 0.3
+    x1 += 3
     KEY R if runrgt
 }
 
@@ -40,7 +40,7 @@ fct run() {
     DrawRect color1 rect1
     int heightt = height
     heightt -= 50
-    gravity += 0.01
+    gravity += 0.1
     y1 > heightt if y1minus
     KEY SPACE if jump
     KEY LEFT if left
@@ -48,6 +48,7 @@ fct run() {
 }
 
 fct main() {
+    int fps = 60
     int width = 500
     int height = 350
     Vector2 size1 = 50 50
