@@ -4,6 +4,15 @@ import sys
 
 pygame.init()
 
+class Circle:
+    def __init__(self, color, position, radius):
+        self.color = color
+        self.position = position
+        self.radius = radius
+
+    def draw(self):
+        pygame.draw.circle(screen, self.color, self.position, self.radius)
+
 def resolve_collision(rect1, rect2, rect1_x_var, rect1_y_var):
     if rect1.colliderect(rect2):
         # Calcula o deslocamento necessário para separar os retângulos
@@ -25,6 +34,7 @@ def resolve_collision(rect1, rect2, rect1_x_var, rect1_y_var):
 functions = {}
 variables = {"width": 500, "height": 350, "windowname": "Lasun pygame window", "bgR": 0, "bgG": 0, "bgB": 0, "fps": 0} # fps in zero to default of the system
 rects = {}
+circles = {}
 
 class Execute:
     def __init__(self, code):
@@ -691,10 +701,53 @@ class Execute:
                                     print("Error: use normal words and use integer variables names to your rect pos x (part1 of int)")
                                     sys.exit(1)
                             else:
-                                print("Error: use normal words and use rect variables name to your rect collision (part2 of rect)")
+                                print("Error: use normal words and use  variables name to your rect collision (part2 of rect)")
                                 sys.exit(1)
                         else:
                             print("Error: use normal words and use rect variables name to your rect collision (part1 of rect)")
+                            sys.exit(1)
+                    elif token[1] == "Circle":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "WORD":
+                            self.varname = token[1]
+                            token = tokens[tokenpos - 1]
+                            tokenpos += 1
+                            if token[0] == "EQUALS":
+                                token = tokens[tokenpos - 1]
+                                tokenpos += 1
+                                if token[0] == "WORD":
+                                    var1 = variables.get(token[1])
+                                    token = tokens[tokenpos - 1]
+                                    tokenpos += 1
+                                    if token[0] == "WORD":
+                                        var2 = variables.get(token[1])
+                                        token = tokens[tokenpos - 1]
+                                        tokenpos += 1
+                                        if token[0] == "WORD":
+                                            circles[self.varname] = Circle(var1, var2, variables.get(token[1]))
+                                        else:
+                                            print("Error: to create Rect variables, use variable names values (part2) (int circle radius var name)")
+                                            sys.exit(1)
+                                    else:
+                                        print("Error: to create Rect variables, use variable names values (part2) (Vector2 pos var name)")
+                                        sys.exit(1)
+                                else:
+                                    print("Error: to create Circle variables, use variable names values (part1) (Color var name)")
+                                    sys.exit(1)
+                            else:
+                                print("Error: use '=' to atribute variables values")
+                                sys.exit(1)
+                        else:
+                            print(f"Error: Use normal word to set variables name. used type: {token[0]}")
+                            sys.exit(1)
+                    elif token[1] == "DrawCircle":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "WORD":
+                            circles.get(token[1]).draw()
+                        else:
+                            print("Error: use normal words and use circle variables name to set target circle.")
                             sys.exit(1)
                     else:
                         print(f"Error: Unknown keyword: {token[1]}")
@@ -832,7 +885,7 @@ def tokenize(expr):
     return tokens
 
 if __name__ == "__main__":
-    version = "beta 1.1"
+    version = "beta 1.2"
     if len(sys.argv) < 2:
         print(f"Lasun programming language version: {version}")
         print(f"Usage: {sys.argv[0]} <file>")
