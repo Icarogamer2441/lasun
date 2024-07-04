@@ -1,0 +1,12 @@
+fct run() {
+    Circle circle = circlecolor circlepos circleradius
+    DrawCircle circle
+}
+
+fct main() {
+    ! you don't need to set fps, it uses the fps of your system for deafult;
+    int fps = 60
+    Vector2 circlepos = 50 50
+    int circleradius = 10
+    Rgb circlecolor = 255 0 0
+}
