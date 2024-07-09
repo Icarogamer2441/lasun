@@ -2,7 +2,7 @@
 a programming language to create games!
 
 # current state
-Beta
+Oficial Release
 
 # Current version
-beta 1.1
+Ofc 1.0
