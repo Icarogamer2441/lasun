@@ -1,0 +1,13 @@
+fct run() {
+    
+}
+
+fct main() {
+    ! sprites size are not working at the moment (width, height) but you need to specify them;
+    Vector2 pos = 200 100
+    float swidth = 0.5
+    float sheight = 0.5
+    Sprite mysprite = "./test.png"
+    ! add sprite to list of sprites to be drawed (dont need to be in run() function);
+    AddSprite mysprite pos swidth sheight
+}
