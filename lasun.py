@@ -13,13 +13,20 @@ class Circle:
     def draw(self):
         pygame.draw.circle(screen, self.color, self.position, self.radius)
 
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, sprite, pos, width, height):
+        super().__init__()
+        self.image = sprite
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.rect.width = width
+        self.rect.height = height
+
 def resolve_collision(rect1, rect2, rect1_x_var, rect1_y_var):
     if rect1.colliderect(rect2):
-        # Calcula o deslocamento necessário para separar os retângulos
         overlap_x = min(rect1.right - rect2.left, rect2.right - rect1.left)
         overlap_y = min(rect1.bottom - rect2.top, rect2.bottom - rect1.top)
 
-        # Move os retângulos para resolver a colisão
         if abs(overlap_x) < abs(overlap_y):
             if rect1.centerx < rect2.centerx:
                 variables[rect1_x_var] -= overlap_x
@@ -35,6 +42,7 @@ functions = {}
 variables = {"width": 500, "height": 350, "windowname": "Lasun pygame window", "bgR": 0, "bgG": 0, "bgB": 0, "fps": 0} # fps in zero to default of the system
 rects = {}
 circles = {}
+sprites = {}
 
 class Execute:
     def __init__(self, code):
@@ -727,10 +735,10 @@ class Execute:
                                         if token[0] == "WORD":
                                             circles[self.varname] = Circle(var1, var2, variables.get(token[1]))
                                         else:
-                                            print("Error: to create Rect variables, use variable names values (part2) (int circle radius var name)")
+                                            print("Error: to create cricle variables, use variable names values (part2) (int circle radius var name)")
                                             sys.exit(1)
                                     else:
-                                        print("Error: to create Rect variables, use variable names values (part2) (Vector2 pos var name)")
+                                        print("Error: to create circle variables, use variable names values (part2) (Vector2 pos var name)")
                                         sys.exit(1)
                                 else:
                                     print("Error: to create Circle variables, use variable names values (part1) (Color var name)")
@@ -748,6 +756,57 @@ class Execute:
                             circles.get(token[1]).draw()
                         else:
                             print("Error: use normal words and use circle variables name to set target circle.")
+                            sys.exit(1)
+                    elif token[1] == "Sprite":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "WORD":
+                            self.varname = token[1]
+                            token = tokens[tokenpos - 1]
+                            tokenpos += 1
+                            if token[0] == "EQUALS":
+                                token = tokens[tokenpos - 1]
+                                tokenpos += 1
+                                if token[0] == "STRING":
+                                    path = token[1].replace("\"", "").replace("\\n", "\n")
+                                    sprites[self.varname] = [pygame.image.load(path)]
+                                else:
+                                    print("Error: to create sprite variables use strings values")
+                                    sys.exit(1)
+                            else:
+                                print("Error: use '=' to atribute variables values")
+                                sys.exit(1)
+                        else:
+                            print(f"Error: Use normal word to set variables name. used type: {token[0]}")
+                            sys.exit(1)
+                    elif token[1] == "AddSprite":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        if token[0] == "WORD":
+                            targspritename = token[1]
+                            token = tokens[tokenpos - 1]
+                            tokenpos += 1
+                            if token[0] == "WORD":
+                                pos = variables.get(token[1])
+                                token = tokens[tokenpos - 1]
+                                tokenpos += 1
+                                if token[0] == "WORD":
+                                    width = variables.get(token[1])
+                                    token = tokens[tokenpos - 1]
+                                    tokenpos += 1
+                                    if token[0] == "WORD":
+                                        sprites[targspritename].append([pos, width, variables.get(token[1])])
+                                    else:
+                                        print("Error: use int variables name values to set the height")
+                                        sys.exit(1)
+                                else:
+                                    print("Error: use int variables name values to set the width")
+                                    sys.exit(1)
+                            else:
+                                print("Error: use Vector2 variables name values to set the pos")
+                                sys.exit(1)
+                        else:
+                            print("Error: use sprite variables name values to set the target sprite.")
                             sys.exit(1)
                     else:
                         print(f"Error: Unknown keyword: {token[1]}")
@@ -885,13 +944,14 @@ def tokenize(expr):
     return tokens
 
 if __name__ == "__main__":
-    version = "beta 1.2"
+    version = "1.0"
     if len(sys.argv) < 2:
         print(f"Lasun programming language version: {version}")
         print(f"Usage: {sys.argv[0]} <file>")
     else:
         if sys.argv[1].endswith(".lasun"):
             with open(sys.argv[1], "r") as f:
+                all_sprites = pygame.sprite.Group()
                 Execute(f.read()).execute1()
                 screen = pygame.display.set_mode((variables["width"], variables["height"]))
                 pygame.display.set_caption(variables["windowname"])
@@ -900,6 +960,11 @@ if __name__ == "__main__":
 
                 bgcolor = (variables["bgR"], variables["bgG"], variables["bgB"])
                 print("Background color (bg):", bgcolor)
+
+                if len(sprites):
+                    for sprt in sprites:
+                        sprite = Sprite(sprites[sprt][0], sprites[sprt][1][0], sprites[sprt][1][1], sprites[sprt][1][2])
+                        all_sprites.add(sprite)
 
                 running = True
                 while running:
@@ -912,8 +977,10 @@ if __name__ == "__main__":
                     screen.fill(bgcolor)
 
                     Execute(" ".join(functions["run"]["code"])).execute2()
-                    pygame.display.flip()
 
+                    all_sprites.draw(screen)
+
+                    pygame.display.flip()
                     if fps:
                         clock.tick(fps)
         else:
